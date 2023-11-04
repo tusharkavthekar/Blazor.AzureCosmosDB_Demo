@@ -1,0 +1,56 @@
+﻿@page "/"
+@inject IEmployeeService employeeService
+
+@if(employees == null)
+{
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+    </div>
+}
+else
+{
+    <a href=@($"Upsert") class="btn btn-primary"><span class="oi oi-plus" /> Add Employee </a>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>Name </th>
+                    <th>Skill </th>
+                    <th>CompanyName </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var emp in employees)
+                {
+                    <tr>
+                        <td>@emp.Name</td>
+                        <td>@emp.Skill</td>
+                        <td>@emp.CompanyName</td>
+                        <td>
+                            <a href=@($"Upsert/{emp.id}") class="btn btn-primary"><span class="oi oi-pencil" /> </a>
+                            <button class="btn btn-danger" @onclick="async () => await DeleteEmployee(emp.id)"><span class="oi oi-trash" /></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    List<Employee>
+    employees = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await employeeService.GetEmployeeDetails();
+    }
+
+    private async Task DeleteEmployee(Guid? id)
+    {
+        await employeeService.DeleteEmployee(id.ToString(), id.ToString());
+        employees = await employeeService.GetEmployeeDetails();
+    }
+}

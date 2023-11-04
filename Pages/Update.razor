@@ -1,0 +1,51 @@
+﻿@*﻿@page "/update"*@
+@page "/update/{id}"
+@inject IEmployeeService employeeService;
+@inject NavigationManager NavManager;
+
+<h3>Update Employee</h3>
+<EditForm Model="@employee">
+    <div class="form-group row p-2">
+        <input type="hidden" @bind-value="employee.id" />
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Name" @bind-value="employee.Name" />
+        </div>
+
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Country" @bind-value="employee.Skill" />
+        </div>
+    </div>
+    <div class="form-group row p-2">
+
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Specialty" @bind-value="employee.CompanyName" />
+        </div>
+    </div>
+    
+    <div class="form-group row p-2">
+        <div class="text-center">
+            <button class="btn btn-primary" @onclick="@(async () => await SaveEmployee())">Save</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    Employee employee = new();
+
+    [Parameter]
+    public string? id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(id))
+        {
+            employee = await employeeService.GetEmployeeDetailsById(id, id);
+        }
+    }
+
+    private async Task SaveEmployee()
+    {
+        await employeeService.UpdateEmployee(employee);
+        NavManager.NavigateTo("/");
+    }
+}
